@@ -1,0 +1,32 @@
+<html>
+    <head>
+        <link rel="stylesheet" href="http://code.jquery.com/ui/1.10.3/themes/smoothness/jquery-ui.css" />
+        <script src="http://code.jquery.com/jquery-1.9.1.js"></script>
+        <script src="http://code.jquery.com/ui/1.10.3/jquery-ui.js"></script>
+        <link rel="stylesheet" href="/resources/demos/style.css" />
+        <script>
+            $(function() {
+            $( "#datepicker1" ).datepicker({ dateFormat: "yy-mm-dd" });
+            });
+            $(function() {
+            $( "#datepicker2" ).datepicker({ dateFormat: "yy-mm-dd" });
+            });
+        </script>
+        <title>ISPs' speed chart for Indian cities</title>
+    </head>
+    <body>
+        This application charts download and upload speed of ISPs in Indian cities based on data from
+        <a href="http://www.netindex.com" target="_blank">Net Index by Ookla</a>.<br>
+        Please submit your city and date range you're looking for.<br><br>
+        <form action="/submit" method="post">
+            <div>Your city: <select name="city">
+                {% for city in cityList %}
+                    <option value="{{ city }}">{{ city }}</option>
+                {% endfor %}
+            </select></div>
+            <div>Start date: <input type="text" id="datepicker1" name="startDate" value="2013-01-01"> &nbspdata available since 2008-01-01</div>
+            <div>End date: <input type="text" id="datepicker2" name="endDate" value="2013-10-19"> &nbspdata available till 2013-10-19</div><br>
+            <div><input type="submit" value="Submit"></div>
+        </form>
+    </body>
+</html>
