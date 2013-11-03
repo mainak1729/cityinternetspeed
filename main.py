@@ -44,6 +44,20 @@ class SpeedBar(Handler):
         dateList = map(lambda x: int(x), dateString.split('-'))
         return datetime.date(dateList[0], dateList[1], dateList[2])
 
+    def generateDataRows(self, ispList, attribute):
+        return [[ isp.ispName,
+            getattr(isp, attribute),
+            isp.ispName.upper() +
+                '\nAverage download speed: ' +
+                '{0:.3f}'.format(isp.downloadKbps) +
+                ' kbps\nAverage upload speed: ' +
+                '{0:.3f}'.format(isp.uploadKbps) +
+                ' kbps\nNumber of tests analysed: ' +
+                str(isp.totalTests) +
+                '\nAverage distance between the client and the server across all tests: ' +
+                '{0:.3f}'.format(isp.distanceKms) +
+                ' km'] for isp in ispList]
+
     def post(self):
         cityData = open('ahmedabadData.csv', 'rb')
         firstDate = datetime.date(2008, 1, 1)
@@ -82,18 +96,21 @@ class SpeedBar(Handler):
 
         ispListSortedByDownloadKbps = sorted(ispList, key=operator.attrgetter('downloadKbps'), reverse=True)
         ispListSortedByUploadKbps = sorted(ispList, key=operator.attrgetter('uploadKbps'), reverse=True)
-        dataRowsForDownloadSpeed = [[isp.ispName, isp.downloadKbps,
-            isp.ispName.upper() + '\nAverage download speed: ' + '{0:.3f}'.format(isp.downloadKbps)
-            + ' kbps\nAverage upload speed: ' + '{0:.3f}'.format(isp.uploadKbps)
-            + ' kbps\nNumber of tests analysed: ' + str(isp.totalTests)
-            + '\nAverage distance between the client and the server across all tests: '
-            + '{0:.3f}'.format(isp.distanceKms) + ' km'] for isp in ispListSortedByDownloadKbps]
-        dataRowsForUploadSpeed = [[isp.ispName, isp.uploadKbps,
-            isp.ispName.upper() + '\nAverage download speed: ' + '{0:.3f}'.format(isp.downloadKbps)
-            + ' kbps\nAverage upload speed: ' + '{0:.3f}'.format(isp.uploadKbps)
-            + ' kbps\nNumber of tests analysed: ' + str(isp.totalTests)
-            + '\nAverage distance between the client and the server across all tests: '
-            + '{0:.3f}'.format(isp.distanceKms) + ' km'] for isp in ispListSortedByUploadKbps]
+        dataRowsForDownloadSpeed = self.generateDataRows(ispListSortedByDownloadKbps, 'downloadKbps')
+        logging.info(dataRowsForDownloadSpeed)
+        dataRowsForUploadSpeed = self.generateDataRows(ispListSortedByUploadKbps, 'uploadKbps')
+#        dataRowsForDownloadSpeed = [[isp.ispName, isp.downloadKbps,
+#            isp.ispName.upper() + '\nAverage download speed: ' + '{0:.3f}'.format(isp.downloadKbps)
+#            + ' kbps\nAverage upload speed: ' + '{0:.3f}'.format(isp.uploadKbps)
+#            + ' kbps\nNumber of tests analysed: ' + str(isp.totalTests)
+#            + '\nAverage distance between the client and the server across all tests: '
+#            + '{0:.3f}'.format(isp.distanceKms) + ' km'] for isp in ispListSortedByDownloadKbps]
+#        dataRowsForUploadSpeed = [[isp.ispName, isp.uploadKbps,
+#            isp.ispName.upper() + '\nAverage download speed: ' + '{0:.3f}'.format(isp.downloadKbps)
+#            + ' kbps\nAverage upload speed: ' + '{0:.3f}'.format(isp.uploadKbps)
+#            + ' kbps\nNumber of tests analysed: ' + str(isp.totalTests)
+#            + '\nAverage distance between the client and the server across all tests: '
+#            + '{0:.3f}'.format(isp.distanceKms) + ' km'] for isp in ispListSortedByUploadKbps]
         self.render('chart.html',
                     cityName=cityName,
                     startDate=str(startDate),
