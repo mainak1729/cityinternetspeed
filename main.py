@@ -12,6 +12,13 @@ from CommonData import cityList
 template_dir = os.path.join(os.path.dirname(__file__), 'templates')
 jinja_env = jinja2.Environment(loader = jinja2.FileSystemLoader(template_dir), autoescape=True)
 
+firstForm = jinja_env.get_template('form.html').render(cityList=cityList,
+    cityName='Ahmedabad',
+    defaultStartDate='2013-01-01',
+    defaultEndDate='2013-10-19',
+    dataStartDate='2008, 1 - 1, 1',
+    dataEndDate='2013, 10 - 1, 19')
+
 class Isp:
     def __init__(self, isp_name, download_kbps, upload_kbps, total_tests, distance_kms):
         self.ispName = isp_name
@@ -50,12 +57,7 @@ class MainPage(Handler):
                 ' km'] for isp in ispList]
 
     def get(self):
-        self.render('form.html',
-                    cityList=cityList,
-                    defaultStartDate='2013-01-01',
-                    defaultEndDate='2013-10-19',
-                    dataStartDate='2008, 1 - 1, 1',
-                    dataEndDate='2013, 10 - 1, 19')
+        self.response.out.write(firstForm)
 
     def post(self):
         firstDate = datetime.date(2008, 1, 1)
@@ -67,6 +69,16 @@ class MainPage(Handler):
 
         startDate = defaultStartDate = self.dateString_to_date(self.request.get('startDate'))
         endDate = defaultEndDate = self.dateString_to_date(self.request.get('endDate'))
+
+        self.render('form.html',
+                    cityList=cityList,
+                    cityName=cityName,
+                    defaultStartDate=defaultStartDate,
+                    defaultEndDate=defaultEndDate,
+                    dataStartDate='2008, 1 - 1, 1',
+                    dataEndDate='2013, 10 - 1, 19')
+
+
         ispList = []
         ispNameList = []
 
@@ -104,13 +116,7 @@ class MainPage(Handler):
         ispListSortedByUploadKbps = sorted(ispList, key=operator.attrgetter('uploadKbps'), reverse=True)
         dataRowsForDownloadSpeed = self.generateDataRows(ispListSortedByDownloadKbps, 'downloadKbps')
         dataRowsForUploadSpeed = self.generateDataRows(ispListSortedByUploadKbps, 'uploadKbps')
-        self.render('form.html',
-                    cityList=cityList,
-                    cityName=cityName,
-                    defaultStartDate=defaultStartDate,
-                    defaultEndDate=defaultEndDate,
-                    dataStartDate='2008, 1 - 1, 1',
-                    dataEndDate='2013, 10 - 1, 19')
+
         self.render('chart.html',
                     cityName=cityName,
                     startDate=str(startDate),
