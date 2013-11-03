@@ -35,7 +35,9 @@ class MainPage(Handler):
         self.render('form.html',
                     cityList=cityList,
                     defaultStartDate='2013-01-01',
-                    defaultEndDate='2013-10-19')
+                    defaultEndDate='2013-10-19',
+                    dataStartDate='2008, 1 - 1, 1',
+                    dataEndDate='2013, 10 - 1, 19')
 
 class SpeedBar(Handler):
     def dateString_to_date(self, dateString): #for YYYY-MM-DD

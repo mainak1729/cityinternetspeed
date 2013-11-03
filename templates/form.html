@@ -7,7 +7,7 @@
         <script>
             $(function() {
                 $( "#from" ).datepicker({
-                    minDate: new Date(2008, 1 - 1, 1),
+                    minDate: new Date({{ dataStartDate|safe }}),
                     changeMonth: true,
                     changeYear: true,
                     numberOfMonths: 3,
@@ -17,7 +17,7 @@
                   }
                 });
                 $( "#to" ).datepicker({
-                    maxDate: new Date(2013, 10 - 1, 19),
+                    maxDate: new Date({{ dataEndDate|safe }}),
                     changeMonth: true,
                     changeYear: true,
                     numberOfMonths: 3,
