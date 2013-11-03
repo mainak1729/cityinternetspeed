@@ -6,10 +6,26 @@
         <link rel="stylesheet" href="/resources/demos/style.css" />
         <script>
             $(function() {
-            $( "#datepicker1" ).datepicker({ dateFormat: "yy-mm-dd" });
-            });
-            $(function() {
-            $( "#datepicker2" ).datepicker({ dateFormat: "yy-mm-dd" });
+                $( "#from" ).datepicker({
+                    minDate: new Date(2008, 1 - 1, 1),
+                    changeMonth: true,
+                    changeYear: true,
+                    numberOfMonths: 3,
+                    dateFormat: "yy-mm-dd",
+                    onClose: function( selectedDate ) {
+                        $( "#to" ).datepicker( "option", "minDate", selectedDate );
+                  }
+                });
+                $( "#to" ).datepicker({
+                    maxDate: new Date(2013, 10 - 1, 19),
+                    changeMonth: true,
+                    changeYear: true,
+                    numberOfMonths: 3,
+                    dateFormat: "yy-mm-dd",
+                    onClose: function( selectedDate ) {
+                        $( "#from" ).datepicker( "option", "maxDate", selectedDate );
+                  }
+                });
             });
         </script>
         <title>ISPs' speed chart for Indian cities</title>
@@ -18,14 +34,14 @@
         This application charts download and upload speed of ISPs in Indian cities based on data from
         <a href="http://www.netindex.com" target="_blank">Net Index by Ookla</a>.<br>
         Please submit your city and date range you're looking for.<br><br>
-        <form action="/submit" method="post">
+        <form name="inputForm" action="/submit" method="post">
             <div>Your city: <select name="city">
                 {% for city in cityList %}
                     <option value="{{ city }}">{{ city }}</option>
                 {% endfor %}
             </select></div>
-            <div>Start date: <input type="text" id="datepicker1" name="startDate" value="{{ defaultStartDate }}"> &nbspdata available since {{ dataStartDate }}</div>
-            <div>End date: <input type="text" id="datepicker2" name="endDate" value="{{ defaultEndDate }}"> &nbspdata available till {{ dataEndDate }}</div><br>
+            <div>Start date: <input type="text" id="from" name="startDate" value="{{ defaultStartDate }}"></div>
+            <div>End date: <input type="text" id="to" name="endDate" value="{{ defaultEndDate }}"></div><br>
             <div><input type="submit" value="Submit"></div>
         </form>
     </body>
