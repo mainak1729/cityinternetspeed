@@ -2,7 +2,6 @@ import csv
 import datetime
 import jinja2
 import json
-import logging
 import operator
 import os
 import webapp2
@@ -45,25 +44,28 @@ class MainPage(Handler):
     def generateDataRows(self, ispList, attribute):
         return [[ isp.ispName,
             getattr(isp, attribute),
-            isp.ispName.upper() +
-                '\nAverage download speed: ' +
-                '{0:.3f}'.format(isp.downloadKbps) +
-                ' kbps\nAverage upload speed: ' +
-                '{0:.3f}'.format(isp.uploadKbps) +
-                ' kbps\nNumber of tests analysed: ' +
-                str(isp.totalTests) +
-                '\nAverage distance between the client and the server across all tests: ' +
-                '{0:.3f}'.format(isp.distanceKms) +
-                ' km'] for isp in ispList]
+            isp.ispName.upper()
+                + '\nAverage download speed: '
+                + '{0:.3f}'.format(isp.downloadKbps)
+                + ' kbps\nAverage upload speed: '
+                + '{0:.3f}'.format(isp.uploadKbps)
+                + ' kbps\nNumber of tests analysed: '
+                + str(isp.totalTests)
+                + '\nAverage distance between the client and the server across all tests: '
+                + '{0:.3f}'.format(isp.distanceKms)
+                + ' km'] for isp in ispList]
 
     def get(self):
         self.response.out.write(firstForm)
 
     def post(self):
-        firstDate = datetime.date(2008, 1, 1)
-        lastDate = datetime.date(2013, 10, 19)
-        noData = False
         cityName = self.request.get('city')
+        '''
+        cityDataFile is a csv file containing ISP name, test date, average download speed (kbps), average upload speed (kbps), number of tests analysed, average distance (miles) between the client and the server across all tests. For example,
+
+        ahmedabadData.py:
+        "NIB (National Internet Backbone)","2008-01-01",1549.52,237.856,272,283.735
+        '''
         cityDataFile = cityName.lower() + 'Data.csv'
         cityData = open(cityDataFile, 'rb')
 
@@ -71,13 +73,12 @@ class MainPage(Handler):
         endDate = defaultEndDate = self.dateString_to_date(self.request.get('endDate'))
 
         self.render('form.html',
-                    cityList=cityList,
-                    cityName=cityName,
-                    defaultStartDate=defaultStartDate,
-                    defaultEndDate=defaultEndDate,
-                    dataStartDate='2008, 1 - 1, 1',
-                    dataEndDate='2013, 10 - 1, 19')
-
+            cityList=cityList,
+            cityName=cityName,
+            defaultStartDate=defaultStartDate,
+            defaultEndDate=defaultEndDate,
+            dataStartDate='2008, 1 - 1, 1',
+            dataEndDate='2013, 10 - 1, 19')
 
         ispList = []
         ispNameList = []
@@ -118,12 +119,11 @@ class MainPage(Handler):
         dataRowsForUploadSpeed = self.generateDataRows(ispListSortedByUploadKbps, 'uploadKbps')
 
         self.render('chart.html',
-                    cityName=cityName,
-                    startDate=str(startDate),
-                    endDate=str(endDate),
-                    dataRowsForDownloadSpeed=json.dumps(dataRowsForDownloadSpeed),
-                    dataRowsForUploadSpeed=json.dumps(dataRowsForUploadSpeed),
-                    lastUpdatedDate='2013-10-19')
+            cityName=cityName,
+            startDate=str(startDate),
+            endDate=str(endDate),
+            dataRowsForDownloadSpeed=json.dumps(dataRowsForDownloadSpeed),
+            dataRowsForUploadSpeed=json.dumps(dataRowsForUploadSpeed),
+            lastUpdatedDate='2013-10-19')
 
-app = webapp2.WSGIApplication([('/', MainPage)],
-                               debug=True)
+app = webapp2.WSGIApplication([('/', MainPage)])
