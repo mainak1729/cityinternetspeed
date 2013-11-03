@@ -72,9 +72,14 @@ class SpeedBar(Handler):
         ispList = []
         ispNameList = []
 
-        for currentData in csv.reader(cityData, skipinitialspace=True):
-            currentDate = self.dateString_to_date(currentData[1])
-            if (currentDate >= startDate) and (currentDate <= endDate):
+        dataIterator = csv.reader(cityData, skipinitialspace=True).__iter__()
+        currentData = dataIterator.next()
+
+        while self.dateString_to_date(currentData[1]) < startDate:
+            currentData = dataIterator.next()
+
+        while self.dateString_to_date(currentData[1]) <= endDate:
+            try:
                 currentIspName = currentData[0]
                 if currentIspName not in ispNameList:
                     ispList.append(Isp(currentIspName, float(currentData[2]), float(currentData[3]), int(currentData[4]), float(currentData[5])*1.60934))
@@ -86,6 +91,9 @@ class SpeedBar(Handler):
                     ispList[currentIndex].uploadKbps += float(currentData[3])
                     ispList[currentIndex].totalTests += int(currentData[4])
                     ispList[currentIndex].distanceKms += float(currentData[5])*1.60934
+                currentData = dataIterator.next()
+            except StopIteration:
+                break
 
         cityData.close()
 
@@ -97,20 +105,7 @@ class SpeedBar(Handler):
         ispListSortedByDownloadKbps = sorted(ispList, key=operator.attrgetter('downloadKbps'), reverse=True)
         ispListSortedByUploadKbps = sorted(ispList, key=operator.attrgetter('uploadKbps'), reverse=True)
         dataRowsForDownloadSpeed = self.generateDataRows(ispListSortedByDownloadKbps, 'downloadKbps')
-        logging.info(dataRowsForDownloadSpeed)
         dataRowsForUploadSpeed = self.generateDataRows(ispListSortedByUploadKbps, 'uploadKbps')
-#        dataRowsForDownloadSpeed = [[isp.ispName, isp.downloadKbps,
-#            isp.ispName.upper() + '\nAverage download speed: ' + '{0:.3f}'.format(isp.downloadKbps)
-#            + ' kbps\nAverage upload speed: ' + '{0:.3f}'.format(isp.uploadKbps)
-#            + ' kbps\nNumber of tests analysed: ' + str(isp.totalTests)
-#            + '\nAverage distance between the client and the server across all tests: '
-#            + '{0:.3f}'.format(isp.distanceKms) + ' km'] for isp in ispListSortedByDownloadKbps]
-#        dataRowsForUploadSpeed = [[isp.ispName, isp.uploadKbps,
-#            isp.ispName.upper() + '\nAverage download speed: ' + '{0:.3f}'.format(isp.downloadKbps)
-#            + ' kbps\nAverage upload speed: ' + '{0:.3f}'.format(isp.uploadKbps)
-#            + ' kbps\nNumber of tests analysed: ' + str(isp.totalTests)
-#            + '\nAverage distance between the client and the server across all tests: '
-#            + '{0:.3f}'.format(isp.distanceKms) + ' km'] for isp in ispListSortedByUploadKbps]
         self.render('chart.html',
                     cityName=cityName,
                     startDate=str(startDate),
