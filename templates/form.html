@@ -24,8 +24,8 @@
                     <option value="{{ city }}">{{ city }}</option>
                 {% endfor %}
             </select></div>
-            <div>Start date: <input type="text" id="datepicker1" name="startDate" value="2013-01-01"> &nbspdata available since 2008-01-01</div>
-            <div>End date: <input type="text" id="datepicker2" name="endDate" value="2013-10-19"> &nbspdata available till 2013-10-19</div><br>
+            <div>Start date: <input type="text" id="datepicker1" name="startDate" value="{{ defaultStartDate }}"> &nbspdata available since {{ dataStartDate }}</div>
+            <div>End date: <input type="text" id="datepicker2" name="endDate" value="{{ defaultEndDate }}"> &nbspdata available till {{ dataEndDate }}</div><br>
             <div><input type="submit" value="Submit"></div>
         </form>
     </body>

@@ -12,11 +12,6 @@ from CommonData import cityList
 template_dir = os.path.join(os.path.dirname(__file__), 'templates')
 jinja_env = jinja2.Environment(loader = jinja2.FileSystemLoader(template_dir), autoescape=True)
 
-def jsonfilter(value):
-    return json.dumps(value)
-
-jinja_env.filters['json'] = jsonfilter
-
 class Isp:
     def __init__(self, isp_name, download_kbps, upload_kbps, total_tests, distance_kms):
         self.ispName = isp_name
@@ -37,7 +32,12 @@ class Handler(webapp2.RequestHandler):
 
 class MainPage(Handler):
     def get(self):
-        self.render('form.html', cityList=cityList)
+        self.render('form.html',
+                    cityList=cityList,
+                    defaultStartDate='2013-01-01',
+                    defaultEndDate='2013-10-19',
+                    dataStartDate='2013-01-01',
+                    dataEndDate='2008-01-01')
 
 class SpeedBar(Handler):
     def dateString_to_date(self, dateString): #for YYYY-MM-DD
@@ -157,7 +157,8 @@ class SpeedBar(Handler):
                         startDate=str(startDate),
                         endDate=str(endDate),
                         dataRowsForDownloadSpeed=json.dumps(dataRowsForDownloadSpeed),
-                        dataRowsForUploadSpeed=json.dumps(dataRowsForUploadSpeed))
+                        dataRowsForUploadSpeed=json.dumps(dataRowsForUploadSpeed),
+                        lastUpdatedDate='2013-10-19')
 
 app = webapp2.WSGIApplication([('/', MainPage),
                                ('/submit', SpeedBar)],
