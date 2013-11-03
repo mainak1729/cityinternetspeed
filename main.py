@@ -1,6 +1,7 @@
 import csv
 import datetime
 import jinja2
+import json
 import logging
 import operator
 import os
@@ -10,6 +11,11 @@ from CommonData import cityList
 
 template_dir = os.path.join(os.path.dirname(__file__), 'templates')
 jinja_env = jinja2.Environment(loader = jinja2.FileSystemLoader(template_dir), autoescape=True)
+
+def jsonfilter(value):
+    return json.dumps(value)
+
+jinja_env.filters['json'] = jsonfilter
 
 class Isp:
     def __init__(self, isp_name, download_kbps, upload_kbps, total_tests, distance_kms):
@@ -46,97 +52,8 @@ class SpeedBar(Handler):
         negativeRange = False
         invalidDate = False
         cityName = self.request.get('city')
-
-        if cityName == 'Amritsar':
-            cityData = open('amritsarData.csv', 'rb')
-        if cityName == 'Aurangabad':
-            cityData = open('aurangabadData.csv', 'rb')
-        if cityName == 'Bangalore':
-            cityData = open('bangaloreData.csv', 'rb')
-        if cityName == 'Bhopal':
-            cityData = open('bhopalData.csv', 'rb')
-        if cityName == 'Bhubaneswar':
-            cityData = open('bhubaneswarData.csv', 'rb')
-        if cityName == 'Calicut':
-            cityData = open('calicutData.csv', 'rb')
-        if cityName == 'Chandigarh':
-            cityData = open('chandigarhData.csv', 'rb')
-        if cityName == 'Chennai':
-            cityData = open('chennaiData.csv', 'rb')
-        if cityName == 'Cochin':
-            cityData = open('cochinData.csv', 'rb')
-        if cityName == 'Coimbatore':
-            cityData = open('coimbatoreData.csv', 'rb')
-        if cityName == 'Delhi':
-            cityData = open('delhiData.csv', 'rb')
-        if cityName == 'Ernakulam':
-            cityData = open('ernakulamData.csv', 'rb')
-        if cityName == 'Faridabad':
-            cityData = open('faridabadData.csv', 'rb')
-        if cityName == 'Ghaziabad':
-            cityData = open('ghaziabadData.csv', 'rb')
-        if cityName == 'Gurgaon':
-            cityData = open('gurgaonData.csv', 'rb')
-        if cityName == 'Guwahati':
-            cityData = open('guwahatiData.csv', 'rb')
-        if cityName == 'Hyderabad':
-            cityData = open('hyderabadData.csv', 'rb')
-        if cityName == 'Indore':
-            cityData = open('indoreData.csv', 'rb')
-        if cityName == 'Jaipur':
-            cityData = open('jaipurData.csv', 'rb')
-        if cityName == 'Jalandhar':
-            cityData = open('jalandharData.csv', 'rb')
-        if cityName == 'Jodhpur':
-            cityData = open('jodhpurData.csv', 'rb')
-        if cityName == 'Kannur':
-            cityData = open('kannurData.csv', 'rb')
-        if cityName == 'Kanpur':
-            cityData = open('kanpurData.csv', 'rb')
-        if cityName == 'Kolkata':
-            cityData = open('kolkataData.csv', 'rb')
-        if cityName == 'Kottayam':
-            cityData = open('kottayamData.csv', 'rb')
-        if cityName == 'Lucknow':
-            cityData = open('lucknowData.csv', 'rb')
-        if cityName == 'Ludhiana':
-            cityData = open('ludhianaData.csv', 'rb')
-        if cityName == 'Madurai':
-            cityData = open('maduraiData.csv', 'rb')
-        if cityName == 'Meerut':
-            cityData = open('meerutData.csv', 'rb')
-        if cityName == 'Mumbai':
-            cityData = open('mumbaiData.csv', 'rb')
-        if cityName == 'Nagari':
-            cityData = open('nagariData.csv', 'rb')
-        if cityName == 'Nagpur':
-            cityData = open('nagpurData.csv', 'rb')
-        if cityName == 'Nasik':
-            cityData = open('nasikData.csv', 'rb')
-        if cityName == 'Patiala':
-            cityData = open('patialaData.csv', 'rb')
-        if cityName == 'Patna':
-            cityData = open('patnaData.csv', 'rb')
-        if cityName == 'Pondicherry':
-            cityData = open('pondicherryData.csv', 'rb')
-        if cityName == 'Pune':
-            cityData = open('puneData.csv', 'rb')
-        if cityName == 'Rajkot':
-            cityData = open('rajkotData.csv', 'rb')
-        if cityName == 'Surat':
-            cityData = open('suratData.csv', 'rb')
-        if cityName == 'Suri':
-            cityData = open('suriData.csv', 'rb')
-        if cityName == 'Thane':
-            cityData = open('thaneData.csv', 'rb')
-        if cityName == 'Thrissur':
-            cityData = open('thrissurData.csv', 'rb')
-        if cityName == 'Trivandrum':
-            cityData = open('trivandrumData.csv', 'rb')
-        if cityName == 'Vadodara':
-            cityData = open('vadodaraData.csv', 'rb')
-        if cityName == 'Vijayawada':
-            cityData = open('vijayawadaData.csv', 'rb')
+        cityDataFile = cityName.lower() + 'Data.csv'
+        cityData = open(cityDataFile, 'rb')
 
         try:
             startDate = self.dateString_to_date(self.request.get('startDate'))
@@ -213,6 +130,7 @@ class SpeedBar(Handler):
                         ispList[currentIndex].distanceKms += float(currentData[5])*1.60934
 
             cityData.close()
+            logging.info('count = ' + str(sum(isp.count for isp in ispList)))
 
             for isp in ispList:
                 isp.downloadKbps /= isp.count
@@ -221,93 +139,26 @@ class SpeedBar(Handler):
 
             ispListSortedByDownloadKbps = sorted(ispList, key=operator.attrgetter('downloadKbps'), reverse=True)
             ispListSortedByUploadKbps = sorted(ispList, key=operator.attrgetter('uploadKbps'), reverse=True)
-            self.response.out.write("""<html>
-                <head>
-                    <script type="text/javascript" src="https://www.google.com/jsapi"></script>
-                    <script type="text/javascript">
-                        google.load('visualization', '1.0', {'packages':['corechart']});
-                        google.setOnLoadCallback(drawDownloadChart);
-                        google.setOnLoadCallback(drawUploadChart);
-                        function drawDownloadChart() {
-                            var data = new google.visualization.DataTable();
-                            data.addColumn('string', 'ISP name');
-                            data.addColumn('number', 'Average download speed (kbps)');
-                            data.addColumn({type: 'string', role: 'tooltip'});
-                            data.addRows(""" + repr([[isp.ispName, isp.downloadKbps,
-                                isp.ispName.upper() + '\nAverage download speed: ' + '{0:.3f}'.format(isp.downloadKbps)
-                                + ' kbps\nAverage upload speed: ' + '{0:.3f}'.format(isp.uploadKbps)
-                                + ' kbps\nNumber of tests analysed: ' + str(isp.totalTests)
-                                + '\nAverage distance between the client and the server across all tests: '
-                                + '{0:.3f}'.format(isp.distanceKms) + ' km'] for isp in ispListSortedByDownloadKbps]) + """);
-                            var options = {'title':'Average download speed (kbps) of ISPs in """
-                                                             + cityName
-                                                             + """ from """
-                                                             + str(startDate)
-                                                             + """ to """
-                                                             + str(endDate)
-                                                             + """',
-                                                         'titleTextStyle':{'fontSize':14, 'bold':true},
-                                                         'width':800,
-                                                         'height':1700,
-                                                         'legend':'none',
-                                                         'chartArea':{'left':200, 'top':150},
-                                                         'bar':{'groupWidth':5},
-                                                         'hAxis':{'textStyle':{'fontSize':10}},
-                                                         'vAxis':{'textStyle':{'fontSize':10}},
-                                                         'tooltip':{'textStyle':{'fontSize':12}}};
-                            var chart = new google.visualization.BarChart(document.getElementById('download_div'));
-                            chart.draw(data, options);
-                        }
-                        function drawUploadChart() {
-                            var data = new google.visualization.DataTable();
-                            data.addColumn('string', 'ISP name');
-                            data.addColumn('number', 'Average upload speed (kbps)');
-                            data.addColumn({type: 'string', role: 'tooltip'});
-                            data.addRows(""" + repr([[isp.ispName, isp.uploadKbps,
-                                isp.ispName.upper() + '\nAverage download speed: ' + '{0:.3f}'.format(isp.downloadKbps)
-                                + ' kbps\nAverage upload speed: ' + '{0:.3f}'.format(isp.uploadKbps)
-                                + ' kbps\nNumber of tests analysed: ' + str(isp.totalTests)
-                                + '\nAverage distance between the client and the server across all tests: '
-                                + '{0:.3f}'.format(isp.distanceKms) + ' km'] for isp in ispListSortedByUploadKbps]) + """);
-                            var options = {'title':'Average upload speed (kbps) of ISPs in """
-                                                             + cityName
-                                                             + """ from """
-                                                             + str(startDate)
-                                                             + """ to """
-                                                             + str(endDate)
-                                                             + """',
-                                                         'titleTextStyle':{'fontSize':14, 'bold':true},
-                                                         'width':800,
-                                                         'height':1700,
-                                                         'legend':'none',
-                                                         'colors':['red'],
-                                                         'chartArea':{'left':200, 'top':150},
-                                                         'bar':{'groupWidth':5},
-                                                         'hAxis':{'textStyle':{'fontSize':10}},
-                                                         'vAxis':{'textStyle':{'fontSize':10}},
-                                                         'tooltip':{'textStyle':{'fontSize':12}}};
-                            var chart = new google.visualization.BarChart(document.getElementById('upload_div'));
-                            chart.draw(data, options);
-                        }
-                        function goBack() {
-                            window.history.back()
-                        }
-                    </script>
-                    <title>ISPs' speed chart for Indian cities</title>
-                </head>
-                <body>
-                    <div><input type="button" value="Back" onclick="goBack()"></div><br>
-                    Please note that results include some private ISPs.<br>
-                    Also actual speed vary over different parts of a city over different time of a day.
-                    <div id="download_div"></div>
-                    <div id="upload_div"></div>
-                    Data from <a href="http://www.netindex.com/source-data/" target="_blank">http://www.netindex.com/source-data/</a><br>
-                    <a href="https://drive.google.com/file/d/0B6GVDqnESJVseEdsclM4YzNoOEU/edit?usp=sharing" target="_blank">FAQ</a> from source<br>
-                    Last updated: 2013-10-19<br>
-                    <a href="mailto:mainak1729@gmail.com?subject=Feedback%20for%20cityinternetspeed" target="_blank">Feedback</a><br><br>
-                    <div><input type="button" value="Back" onclick="goBack()"></div>
-                </body></html>""")
+            dataRowsForDownloadSpeed = [[isp.ispName, isp.downloadKbps,
+                isp.ispName.upper() + '\nAverage download speed: ' + '{0:.3f}'.format(isp.downloadKbps)
+                + ' kbps\nAverage upload speed: ' + '{0:.3f}'.format(isp.uploadKbps)
+                + ' kbps\nNumber of tests analysed: ' + str(isp.totalTests)
+                + '\nAverage distance between the client and the server across all tests: '
+                + '{0:.3f}'.format(isp.distanceKms) + ' km'] for isp in ispListSortedByDownloadKbps]
+            dataRowsForUploadSpeed = [[isp.ispName, isp.uploadKbps,
+                isp.ispName.upper() + '\nAverage download speed: ' + '{0:.3f}'.format(isp.downloadKbps)
+                + ' kbps\nAverage upload speed: ' + '{0:.3f}'.format(isp.uploadKbps)
+                + ' kbps\nNumber of tests analysed: ' + str(isp.totalTests)
+                + '\nAverage distance between the client and the server across all tests: '
+                + '{0:.3f}'.format(isp.distanceKms) + ' km'] for isp in ispListSortedByUploadKbps]
+            logging.info(json.dumps(dataRowsForDownloadSpeed))
+            self.render('chart.html',
+                        cityName=cityName,
+                        startDate=str(startDate),
+                        endDate=str(endDate),
+                        dataRowsForDownloadSpeed=json.dumps(dataRowsForDownloadSpeed),
+                        dataRowsForUploadSpeed=json.dumps(dataRowsForUploadSpeed))
 
 app = webapp2.WSGIApplication([('/', MainPage),
-                                                             ('/submit', SpeedBar)],
-                                                             debug=True)
+                               ('/submit', SpeedBar)],
+                               debug=True)

@@ -1,0 +1,65 @@
+<html>
+    <head>
+        <script type="text/javascript" src="https://www.google.com/jsapi"></script>
+        <script type="text/javascript">
+            google.load('visualization', '1.0', {'packages':['corechart']});
+            google.setOnLoadCallback(drawDownloadChart);
+            google.setOnLoadCallback(drawUploadChart);
+            function drawDownloadChart() {
+                var data = new google.visualization.DataTable();
+                data.addColumn('string', 'ISP name');
+                data.addColumn('number', 'Average download speed (kbps)');
+                data.addColumn({type: 'string', role: 'tooltip'});
+                data.addRows({{ dataRowsForDownloadSpeed|safe }})
+                var options = {'title':'Average download speed (kbps) of ISPs in {{ cityName|safe }} from {{ startDate|safe }} to {{ endDate|safe }}',
+                               'titleTextStyle':{'fontSize':14, 'bold':true},
+                               'width':800,
+                               'height':1700,
+                               'legend':'none',
+                               'chartArea':{'left':200, 'top':150},
+                               'bar':{'groupWidth':5},
+                               'hAxis':{'textStyle':{'fontSize':10}},
+                               'vAxis':{'textStyle':{'fontSize':10}},
+                               'tooltip':{'textStyle':{'fontSize':12}}};
+                var chart = new google.visualization.BarChart(document.getElementById('download_div'));
+                chart.draw(data, options);
+            }
+            function drawUploadChart() {
+                var data = new google.visualization.DataTable();
+                data.addColumn('string', 'ISP name');
+                data.addColumn('number', 'Average upload speed (kbps)');
+                data.addColumn({type: 'string', role: 'tooltip'});
+                data.addRows({{ dataRowsForUploadSpeed|safe }});
+                var options = {'title':'Average upload speed (kbps) of ISPs in in {{ cityName }} from {{ startDate|safe }} to {{ endDate|safe }}',
+                               'titleTextStyle':{'fontSize':14, 'bold':true},
+                               'width':800,
+                               'height':1700,
+                               'legend':'none',
+                               'colors':['red'],
+                               'chartArea':{'left':200, 'top':150},
+                               'bar':{'groupWidth':5},
+                               'hAxis':{'textStyle':{'fontSize':10}},
+                               'vAxis':{'textStyle':{'fontSize':10}}};
+                               //'tooltip':{'textStyle':{'fontSize':12}}};
+                var chart = new google.visualization.BarChart(document.getElementById('upload_div'));
+                chart.draw(data, options);
+            }
+            function goBack() {
+                window.history.back()
+            }
+        </script>
+        <title>ISPs' speed chart for Indian cities</title>
+    </head>
+    <body>
+        <div><input type="button" value="Back" onclick="goBack()"></div><br>
+        Please note that results include some private ISPs.<br>
+        Also actual speed vary over different parts of a city over different time of a day.
+        <div id="download_div"></div>
+        <div id="upload_div"></div>
+        Data from <a href="http://www.netindex.com/source-data/" target="_blank">http://www.netindex.com/source-data/</a><br>
+        <a href="https://drive.google.com/file/d/0B6GVDqnESJVseEdsclM4YzNoOEU/edit?usp=sharing" target="_blank">FAQ</a> from source<br>
+        Last updated: 2013-10-19<br>
+        <a href="mailto:mainak1729@gmail.com?subject=Feedback%20for%20cityinternetspeed" target="_blank">Feedback</a><br><br>
+        <div><input type="button" value="Back" onclick="goBack()"></div>
+    </body>
+</html>
