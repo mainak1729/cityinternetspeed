@@ -36,10 +36,14 @@
         This application charts download and upload speed of ISPs in Indian cities based on data from
         <a href="http://www.netindex.com" target="_blank">Net Index by Ookla</a>.<br>
         Please submit your city and date range you're looking for.<br><br>
-        <form name="inputForm" action="/submit" method="post">
+        <form name="inputForm" method="post">
             <div>Your city: <select name="city">
                 {% for city in cityList %}
-                    <option value="{{ city }}">{{ city }}</option>
+                    {% if city == cityName %}
+                        <option selected value="{{ city }}">{{ city }}</option>
+                    {% else %}
+                        <option value="{{ city }}">{{ city }}</option>
+                    {% endif %}
                 {% endfor %}
             </select></div>
             <div>Start date: <input type="text" id="from" name="startDate" value="{{ defaultStartDate }}"></div>

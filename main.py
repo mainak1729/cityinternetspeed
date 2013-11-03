@@ -31,15 +31,6 @@ class Handler(webapp2.RequestHandler):
         self.write(self.render_str(template, **keywords))
 
 class MainPage(Handler):
-    def get(self):
-        self.render('form.html',
-                    cityList=cityList,
-                    defaultStartDate='2013-01-01',
-                    defaultEndDate='2013-10-19',
-                    dataStartDate='2008, 1 - 1, 1',
-                    dataEndDate='2013, 10 - 1, 19')
-
-class SpeedBar(Handler):
     def dateString_to_date(self, dateString): #for YYYY-MM-DD
         dateList = map(lambda x: int(x), dateString.split('-'))
         return datetime.date(dateList[0], dateList[1], dateList[2])
@@ -58,8 +49,15 @@ class SpeedBar(Handler):
                 '{0:.3f}'.format(isp.distanceKms) +
                 ' km'] for isp in ispList]
 
+    def get(self):
+        self.render('form.html',
+                    cityList=cityList,
+                    defaultStartDate='2013-01-01',
+                    defaultEndDate='2013-10-19',
+                    dataStartDate='2008, 1 - 1, 1',
+                    dataEndDate='2013, 10 - 1, 19')
+
     def post(self):
-        cityData = open('ahmedabadData.csv', 'rb')
         firstDate = datetime.date(2008, 1, 1)
         lastDate = datetime.date(2013, 10, 19)
         noData = False
@@ -67,8 +65,8 @@ class SpeedBar(Handler):
         cityDataFile = cityName.lower() + 'Data.csv'
         cityData = open(cityDataFile, 'rb')
 
-        startDate = self.dateString_to_date(self.request.get('startDate'))
-        endDate = self.dateString_to_date(self.request.get('endDate'))
+        startDate = defaultStartDate = self.dateString_to_date(self.request.get('startDate'))
+        endDate = defaultEndDate = self.dateString_to_date(self.request.get('endDate'))
         ispList = []
         ispNameList = []
 
@@ -106,6 +104,13 @@ class SpeedBar(Handler):
         ispListSortedByUploadKbps = sorted(ispList, key=operator.attrgetter('uploadKbps'), reverse=True)
         dataRowsForDownloadSpeed = self.generateDataRows(ispListSortedByDownloadKbps, 'downloadKbps')
         dataRowsForUploadSpeed = self.generateDataRows(ispListSortedByUploadKbps, 'uploadKbps')
+        self.render('form.html',
+                    cityList=cityList,
+                    cityName=cityName,
+                    defaultStartDate=defaultStartDate,
+                    defaultEndDate=defaultEndDate,
+                    dataStartDate='2008, 1 - 1, 1',
+                    dataEndDate='2013, 10 - 1, 19')
         self.render('chart.html',
                     cityName=cityName,
                     startDate=str(startDate),
@@ -114,6 +119,5 @@ class SpeedBar(Handler):
                     dataRowsForUploadSpeed=json.dumps(dataRowsForUploadSpeed),
                     lastUpdatedDate='2013-10-19')
 
-app = webapp2.WSGIApplication([('/', MainPage),
-                               ('/submit', SpeedBar)],
+app = webapp2.WSGIApplication([('/', MainPage)],
                                debug=True)
