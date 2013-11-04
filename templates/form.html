@@ -37,18 +37,27 @@
         <a href="http://www.netindex.com" target="_blank">Net Index by Ookla</a>.<br>
         Please submit your city and date range you're looking for.<br><br>
         <form name="inputForm" method="post">
-            <div>Your city: <select name="city">
-                {% for city in cityList %}
-                    {% if city == cityName %}
-                        <option selected value="{{ city }}">{{ city }}</option>
-                    {% else %}
-                        <option value="{{ city }}">{{ city }}</option>
-                    {% endif %}
-                {% endfor %}
-            </select></div>
-            <div>Start date: <input type="text" id="from" name="startDate" value="{{ defaultStartDate }}"></div>
-            <div>End date: <input type="text" id="to" name="endDate" value="{{ defaultEndDate }}"></div><br>
-            <div><input type="submit" value="Submit"></div>
+            <table>
+                <tr>
+                    <th align=right style="font-weight: normal">Your city:
+                    <td><select name="city">
+                        {% for city in cityList %}
+                            {% if city == cityName %}
+                                <option selected value="{{ city }}">{{ city }}</option>
+                            {% else %}
+                                <option value="{{ city }}">{{ city }}</option>
+                            {% endif %}
+                        {% endfor %}
+                    </select>
+                <tr>
+                    <th align=right style="font-weight: normal">Start date:
+                    <td><input type="text" id="from" name="startDate" value="{{ defaultStartDate }}">
+                <tr>
+                    <th align=right style="font-weight: normal">End date:
+                    <td><input type="text" id="to" name="endDate" value="{{ defaultEndDate }}">
+                <tr>
+                    <td colspan=2 align=center><input type="submit" value="Submit">
+            </table>
         </form>
     </body>
 </html>

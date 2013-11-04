@@ -18,7 +18,7 @@ firstForm = jinja_env.get_template('form.html').render(cityList=cityList,
     dataStartDate='2008, 1 - 1, 1',
     dataEndDate='2013, 10 - 1, 19')
 
-class Isp:
+class Isp(object):
     def __init__(self, isp_name, download_kbps, upload_kbps, total_tests, distance_kms):
         self.ispName = isp_name
         self.count = 1
@@ -67,7 +67,7 @@ class MainPage(Handler):
         "NIB (National Internet Backbone)","2008-01-01",1549.52,237.856,272,283.735
         '''
         cityDataFile = cityName.lower() + 'Data.csv'
-        cityData = open(cityDataFile, 'rb')
+        cityData = open(cityDataFile, 'r')
 
         startDate = defaultStartDate = self.dateString_to_date(self.request.get('startDate'))
         endDate = defaultEndDate = self.dateString_to_date(self.request.get('endDate'))
@@ -83,7 +83,7 @@ class MainPage(Handler):
         ispList = []
         ispNameList = []
 
-        dataIterator = csv.reader(cityData, skipinitialspace=True).__iter__()
+        dataIterator = csv.reader(cityData, skipinitialspace=True)
         currentData = dataIterator.next()
 
         while self.dateString_to_date(currentData[1]) < startDate:
