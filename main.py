@@ -11,12 +11,15 @@ from CommonData import cityList
 template_dir = os.path.join(os.path.dirname(__file__), 'templates')
 jinja_env = jinja2.Environment(loader = jinja2.FileSystemLoader(template_dir), autoescape=True)
 
+minDate = '2008-01-01'
+maxDate = '2013-10-19'
+
 firstForm = jinja_env.get_template('form.html').render(cityList=cityList,
     cityName='Ahmedabad',
-    defaultStartDate='2013-01-01',
-    defaultEndDate='2013-10-19',
-    dataStartDate='2008, 1 - 1, 1',
-    dataEndDate='2013, 10 - 1, 19')
+    startDate='2013-01-01',
+    endDate='2013-10-19',
+    minDate=minDate,
+    maxDate=maxDate)
 
 class Isp(object):
     def __init__(self, isp_name, download_kbps, upload_kbps, total_tests, distance_kms):
@@ -37,9 +40,11 @@ class Handler(webapp2.RequestHandler):
         self.write(self.render_str(template, **keywords))
 
 class MainPage(Handler):
-    def dateString_to_date(self, dateString): #for YYYY-MM-DD
-        dateList = map(lambda x: int(x), dateString.split('-'))
-        return datetime.date(dateList[0], dateList[1], dateList[2])
+    def dateStringToDate(self, dateString): #for YYYY-MM-DD
+        return datetime.date(*map(lambda x: int(x), dateString.split('-')))
+
+    def dateRangeToDates(self, dateRange): #for 'YYYY-MM-DD to YYYY-MM-DD'
+        return map(self.dateStringToDate, dateRange.split(' to '))
 
     def generateDataRows(self, ispList, attribute):
         return [[ isp.ispName,
@@ -69,16 +74,15 @@ class MainPage(Handler):
         cityDataFile = cityName.lower() + 'Data.csv'
         cityData = open(cityDataFile, 'r')
 
-        startDate = defaultStartDate = self.dateString_to_date(self.request.get('startDate'))
-        endDate = defaultEndDate = self.dateString_to_date(self.request.get('endDate'))
+        startDate, endDate = self.dateRangeToDates(self.request.get('dateRange'))
 
         self.render('form.html',
             cityList=cityList,
             cityName=cityName,
-            defaultStartDate=defaultStartDate,
-            defaultEndDate=defaultEndDate,
-            dataStartDate='2008, 1 - 1, 1',
-            dataEndDate='2013, 10 - 1, 19')
+            startDate=startDate,
+            endDate=endDate,
+            minDate=minDate,
+            maxDate=maxDate)
 
         ispList = []
         ispNameList = []
@@ -86,10 +90,10 @@ class MainPage(Handler):
         dataIterator = csv.reader(cityData, skipinitialspace=True)
         currentData = dataIterator.next()
 
-        while self.dateString_to_date(currentData[1]) < startDate:
+        while self.dateStringToDate(currentData[1]) < startDate:
             currentData = dataIterator.next()
 
-        while self.dateString_to_date(currentData[1]) <= endDate:
+        while self.dateStringToDate(currentData[1]) <= endDate:
             try:
                 currentIspName = currentData[0]
                 if currentIspName not in ispNameList:
@@ -124,6 +128,7 @@ class MainPage(Handler):
             endDate=str(endDate),
             dataRowsForDownloadSpeed=json.dumps(dataRowsForDownloadSpeed),
             dataRowsForUploadSpeed=json.dumps(dataRowsForUploadSpeed),
-            lastUpdatedDate='2013-10-19')
+            ispCount=len(ispList),
+            maxDate=maxDate)
 
 app = webapp2.WSGIApplication([('/', MainPage)])

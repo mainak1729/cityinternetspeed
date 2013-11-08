@@ -5,6 +5,7 @@
             google.load('visualization', '1.0', {'packages':['corechart']});
             google.setOnLoadCallback(drawDownloadChart);
             google.setOnLoadCallback(drawUploadChart);
+            var chartHeight = {{ ispCount }}*25;
             function drawDownloadChart() {
                 var data = new google.visualization.DataTable();
                 data.addColumn('string', 'ISP name');
@@ -14,9 +15,9 @@
                 var options = {'title':'Average download speed (kbps) of ISPs in {{ cityName|safe }} from {{ startDate|safe }} to {{ endDate|safe }}',
                                'titleTextStyle':{'fontSize':14, 'bold':true},
                                'width':800,
-                               'height':1700,
+                               'height':chartHeight,
                                'legend':'none',
-                               'chartArea':{'left':200, 'top':150},
+                               'chartArea':{'left':200, 'top':100},
                                'bar':{'groupWidth':5},
                                'hAxis':{'textStyle':{'fontSize':10}},
                                'vAxis':{'textStyle':{'fontSize':10}},
@@ -33,10 +34,10 @@
                 var options = {'title':'Average upload speed (kbps) of ISPs in in {{ cityName }} from {{ startDate|safe }} to {{ endDate|safe }}',
                                'titleTextStyle':{'fontSize':14, 'bold':true},
                                'width':800,
-                               'height':1700,
+                               'height':chartHeight,
                                'legend':'none',
                                'colors':['red'],
-                               'chartArea':{'left':200, 'top':150},
+                               'chartArea':{'left':200, 'top':100},
                                'bar':{'groupWidth':5},
                                'hAxis':{'textStyle':{'fontSize':10}},
                                'vAxis':{'textStyle':{'fontSize':10}},
@@ -49,14 +50,15 @@
     </head>
     <body>
         <hr>
-        Please note that results include some private ISPs.<br>
-        Also actual speed vary over different parts of a city over different time of a day.
-        <div id="download_div"></div>
-        <div id="upload_div"></div>
+        <p class="text-center">Please note that results include some private ISPs. Also actual speed vary over different parts of a city over different time of a day.</p>
+        <div align="center" id="download_div"></div>
+        <div align="center" id="upload_div"></div>
         <hr>
-        <a href="http://www.netindex.com/source-data/" target="_blank" rel="nofollow" style="text-decoration:none">Data source</a>, last updated: {{ lastUpdatedDate }}<br>
-        <a href="https://drive.google.com/file/d/0B6GVDqnESJVseEdsclM4YzNoOEU/edit?usp=sharing" target="_blank" rel="nofollow" style="text-decoration:none">FAQ</a> from source<br>
-        <a href="https://github.com/mainakk/cityinternetspeed" target="_blank" rel="nofollow" style="text-decoration:none">Github</a><br>
-        <a href="mailto:mainak1729@gmail.com?subject=Feedback%20for%20cityinternetspeed" target="_blank" rel="nofollow" style="text-decoration:none">Feedback</a><br><br>
+        <ul class="list-inline" align="center">
+            <li><a href="http://www.netindex.com/source-data/" target="_blank" rel="nofollow" style="text-decoration:none">Data source</a></li>
+            <li><a href="https://github.com/mainakk/cityinternetspeed" target="_blank" rel="nofollow" style="text-decoration:none">Github</a></li>
+            <li><a href="mailto:mainak1729@gmail.com?subject=Feedback%20for%20cityinternetspeed" target="_blank" rel="nofollow" style="text-decoration:none">Feedback</a></li>
+        </ul>
+        <p class="text-center">Last updated on {{ maxDate }}.</p>
     </body>
 </html>

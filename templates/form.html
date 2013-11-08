@@ -1,63 +1,50 @@
 <html>
     <head>
-        <link rel="stylesheet" href="http://code.jquery.com/ui/1.10.3/themes/smoothness/jquery-ui.css" />
-        <script src="http://code.jquery.com/jquery-1.9.1.js"></script>
-        <script src="http://code.jquery.com/ui/1.10.3/jquery-ui.js"></script>
-        <link rel="stylesheet" href="/resources/demos/style.css" />
-        <script>
-            $(function() {
-                $( "#from" ).datepicker({
-                    minDate: new Date({{ dataStartDate|safe }}),
-                    maxDate: new Date({{ dataEndDate|safe }}),
-                    changeMonth: true,
-                    changeYear: true,
-                    numberOfMonths: 3,
-                    dateFormat: "yy-mm-dd",
-                    onClose: function( selectedDate ) {
-                        $( "#to" ).datepicker( "option", "minDate", selectedDate );
-                  }
-                });
-                $( "#to" ).datepicker({
-                    minDate: new Date({{ dataStartDate|safe }}),
-                    maxDate: new Date({{ dataEndDate|safe }}),
-                    changeMonth: true,
-                    changeYear: true,
-                    numberOfMonths: 3,
-                    dateFormat: "yy-mm-dd",
-                    onClose: function( selectedDate ) {
-                        $( "#from" ).datepicker( "option", "maxDate", selectedDate );
-                  }
-                });
-            });
-        </script>
         <title>ISPs' speed chart for Indian cities</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="stylesheet" href="static/css/bootstrap.css">
+        <link rel="stylesheet" href="static/css/daterangepicker-bs3.css">
+        <script src="https://code.jquery.com/jquery.js"></script>
+        <script src="static/js/bootstrap.min.js"></script>
+        <script src="static/js/moment.js"></script>
+        <script src="static/js/daterangepicker.js"></script>
+        <script type="text/javascript">
+            $(document).ready(function() {
+                $('#dateRange').daterangepicker({
+                            format: 'YYYY-MM-DD',
+                            startDate: '{{ startDate|safe }}',
+                            endDate: '{{ endDate|safe }}',
+                            minDate: '2008-01-01',
+                            maxDate: '2013-10-19',
+                            separator: ' to ',
+                            showDropdowns: true,
+                            showWeekNumbers: true,
+                            opens: 'left',
+                            });
+                });
+        </script>
     </head>
     <body>
-        This application charts download and upload speed of ISPs in Indian cities based on data from
-        <a href="http://www.netindex.com" target="_blank">Net Index by Ookla</a>.<br>
-        Please submit your city and date range you're looking for.<br><br>
-        <form name="inputForm" method="post">
-            <table>
-                <tr>
-                    <th align=right style="font-weight: normal">Your city:
-                    <td><select name="city">
-                        {% for city in cityList %}
-                            {% if city == cityName %}
-                                <option selected value="{{ city }}">{{ city }}</option>
-                            {% else %}
-                                <option value="{{ city }}">{{ city }}</option>
-                            {% endif %}
-                        {% endfor %}
-                    </select>
-                <tr>
-                    <th align=right style="font-weight: normal">Start date:
-                    <td><input type="text" id="from" name="startDate" value="{{ defaultStartDate }}">
-                <tr>
-                    <th align=right style="font-weight: normal">End date:
-                    <td><input type="text" id="to" name="endDate" value="{{ defaultEndDate }}">
-                <tr>
-                    <td colspan=2 align=center><input type="submit" value="Submit">
-            </table>
-        </form>
+        <h4 class="text-center">This application charts download and upload speed of ISPs in Indian cities based on data from
+        <a href="http://www.netindex.com" target="_blank">Net Index by Ookla</a>.</h4>
+        <p class="text-center">Please submit your city and date range you're looking for.</p>
+        <form class="form-inline text-center" role="form" name="inputForm" method="post">
+            <div class="form-group">
+                <label class="sr-only" for="city">Your city:</label>
+                <select class="form-control" name="city" id="city">
+                    {% for city in cityList %}
+                        {% if city == cityName %}
+                            <option selected value="{{ city }}">{{ city }}</option>
+                        {% else %}
+                            <option value="{{ city }}">{{ city }}</option>
+                        {% endif %}
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="form-group">
+                <input type="text" class="form-control" name="dateRange" id="dateRange" style="width: 200px" value="{{ startDate }} to {{ endDate }}" />
+            </div>
+          &nbsp;<button type="submit" class="btn btn-primary" value="Chart">Chart</button>
+          </form>
     </body>
 </html>
