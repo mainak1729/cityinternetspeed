@@ -14,10 +14,10 @@
                 data.addRows({{ dataRowsForDownloadSpeed|safe }})
                 var options = {'title':'Average download speed (kbps) of ISPs in {{ cityName|safe }} from {{ startDate|safe }} to {{ endDate|safe }}',
                                'titleTextStyle':{'fontSize':14, 'bold':true},
-                               'width':800,
+                               'width':1000,
                                'height':chartHeight,
                                'legend':'none',
-                               'chartArea':{'left':200, 'top':250},
+                               'chartArea':{'left':225, 'top':200},
                                'bar':{'groupWidth':5},
                                'hAxis':{'textStyle':{'fontSize':10}},
                                'vAxis':{'textStyle':{'fontSize':10}},
@@ -33,7 +33,7 @@
                 data.addRows({{ dataRowsForUploadSpeed|safe }});
                 var options = {'title':'Average upload speed (kbps) of ISPs in in {{ cityName }} from {{ startDate|safe }} to {{ endDate|safe }}',
                                'titleTextStyle':{'fontSize':14, 'bold':true},
-                               'width':800,
+                               'width':1000,
                                'height':chartHeight,
                                'legend':'none',
                                'colors':['red'],
@@ -49,16 +49,15 @@
         <title>ISPs' speed chart for Indian cities</title>
     </head>
     <body>
-        <hr>
-        <p class="text-center">Please note that results include some private ISPs. Also actual speed vary over different parts of a city over different time of a day.</p>
         <div align="center" id="download_div"></div>
         <div align="center" id="upload_div"></div>
-        <hr>
-        <ul class="list-inline" align="center">
-            <li><a href="http://www.netindex.com/source-data/" target="_blank" rel="nofollow" style="text-decoration:none">Data source</a></li>
-            <li><a href="https://github.com/mainakk/cityinternetspeed" target="_blank" rel="nofollow" style="text-decoration:none">Github</a></li>
-            <li><a href="mailto:mainak1729@gmail.com?subject=Feedback%20for%20cityinternetspeed" target="_blank" rel="nofollow" style="text-decoration:none">Feedback</a></li>
-        </ul>
-        <p class="text-center">Last updated on {{ maxDate }}.</p>
+        <nav class="navbar navbar-default navbar-fixed-bottom" role="navigation">
+            <ul class="nav navbar-nav navbar-left">
+                <li><a href="http://www.netindex.com/source-data/" target="_blank" rel="nofollow" style="text-decoration:none">Data source</a></li>
+                <li><a href="https://github.com/mainakk/cityinternetspeed" target="_blank" rel="nofollow" style="text-decoration:none">Github</a></li>
+                <li><a href="mailto:mainak1729@gmail.com?subject=Feedback%20for%20cityinternetspeed" target="_blank" rel="nofollow" style="text-decoration:none">Feedback</a></li>
+            </ul>
+            <p class="navbar-text navbar-right">Last updated on {{ maxDate }}</p>
+        </nav>
     </body>
 </html>
